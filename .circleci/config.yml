@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:6.13.0-stretch-browsers
+    working_directory: ~/project
+
+    steps:
+      - checkout
+      - run: yarn --version
+      - run: node --version
+      - run:
+          name: Install web deps
+          command: yarn
+          working_directory: web
+      - run:
+          name: Print installed deps for debugging
+          command: yarn list
+          working_directory: web
+      - run:
+          name: Run web tests
+          command: yarn test
+          working_directory: web
+
+      - save_cache:
+          paths:
+            - web/node_modules
+          key: web-dependencies-{{ checksum "web/yarn.lock" }}
